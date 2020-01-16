@@ -1,0 +1,28 @@
+header {
+package parser;
+}
+
+E returns [Tree tree] :  p = P() t_ = T_() {tree = new Tree("E", true, p, t_);};
+
+T_ returns [Tree tree] : OR p = P() t_ = T_() {tree = new Tree("T'", true, new Tree("|", false), p, t_);}
+                       | {tree = new Tree("T'", true);};
+
+P returns [Tree tree] :  t = T() e_ = E_() {tree = new Tree("P", true, t, e_);};
+
+E_ returns [Tree tree] :  t = T() e_ = E_() {tree = new Tree("E'", true, t, e_);}
+                       | {tree = new Tree("E'", true);};
+
+T returns [Tree tree] :  f = F() p_ = P_() {tree = new Tree("T", true, f, p_);};
+
+P_ returns [Tree tree] : CLOSURE p_ = P_() {tree = new Tree("P'", true, new Tree("*", false), p_);}
+                       | {tree = new Tree("P'", true);};
+
+F returns [Tree tree] : c = CHARACTER {tree = new Tree("F", true, new Tree(c.getText(), false));}
+                      | LB e = E() RB {tree = new Tree("F", true, new Tree("(", false), e, new Tree(")", false));};
+
+
+OR : "\\|";
+CLOSURE : "\\*";
+CHARACTER : "[a-zA-Z0-9]";
+LB : "\\(";
+RB : "\\)";

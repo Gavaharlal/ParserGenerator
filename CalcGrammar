@@ -1,0 +1,25 @@
+header {
+package calc;
+}
+
+E returns [int res] : t = T() e_ = E_(t) {res = e_;};
+
+E_(int acc) returns [int res] : PLUS t = T() {int propAcc = acc + t;} e_ = E_(propAcc) {res = e_;}
+							  | MINUS t = T() {int propAcc = acc - t;} e_ = E_(propAcc) {res = e_;}
+							  | {res = acc;};
+
+T returns [int res] : f = F() t_ = T_(f) {res = t_;};
+
+T_(int acc) returns [int res] : MUL f = F() {int propAcc = acc * f;} t_ = T_(propAcc) {res = t_;}
+					 | {res = acc;};
+					 
+F returns [int res] : LB e = E() RB {res = e;} 
+					| num = NUM {res = Integer.parseInt(num.getText());}
+					| MINUS f = F() {res = -1 * f;};
+
+PLUS : "\\+";
+MINUS : "-";
+MUL : "\\*";
+LB : "\\(";
+RB : "\\)";
+NUM : "([1-9][0-9]*)|0";
